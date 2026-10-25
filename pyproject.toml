@@ -5,7 +5,15 @@ addopts = "-q"
 [tool.coverage.run]
 relative_files = true
 branch = true
+source = ["."]
+omit = [
+    "tests/*",
+    ".venv/*"
+]
 
 [tool.coverage.report]
 show_missing = true
 fail_under = 80
+
+[tool.coverage.xml]
+output = "coverage.xml"

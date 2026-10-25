@@ -65,13 +65,3 @@ Dependabot revisa las dependencias cada semana.
 
 El archivo `.env` incluye únicamente credenciales de ejemplo para ejecutar localmente. Puedes subirlo a GitHub para este laboratorio, pero **cambia las claves y utiliza secretos fuera del repositorio si publicas el proyecto**.
 
-## Endpoints
-
-- `POST /autenticacion/registro` en Usuarios.
-- `POST /autenticacion/login` en Usuarios.
-- `GET /usuarios/{id}` en Usuarios.
-- `GET`, `POST`, `PUT`, `DELETE` de `/pacientes` en Pacientes (requieren token del login).
-
-## Uso de IA
-
-Este proyecto fue preparado con apoyo de ChatGPT para estructura, código y configuración. Revisar y validar los resultados antes de entregarlo. Las reflexiones personales solicitadas por la evaluación deben ser redactadas por el estudiante.
