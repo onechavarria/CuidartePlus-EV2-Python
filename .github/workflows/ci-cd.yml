@@ -1,0 +1,59 @@
+name: EV2 Python CI CD
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  pruebas:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Instalar dependencias
+        run: python -m pip install -r requirements-dev.txt
+      - name: Pruebas y cobertura
+        run: python -m pytest --cov=usuarios/app --cov=pacientes/app --cov-branch --cov-report=term-missing --cov-report=xml --cov-report=html --cov-fail-under=80
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: cobertura-html
+          path: htmlcov/
+          if-no-files-found: ignore
+      - name: SonarCloud
+        uses: SonarSource/sonarqube-scan-action@v5
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      - name: Validar Quality Gate
+        uses: SonarSource/sonarqube-quality-gate-action@v1
+        with:
+          scanMetadataReportFile: .scannerwork/report-task.txt
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+  despliegue:
+    needs: pruebas
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Construir contenedores
+        run: docker compose build
+      - name: Desplegar entorno simulado
+        run: docker compose up -d --wait --wait-timeout 180
+      - name: Verificar ambos servicios
+        run: |
+          curl --fail http://localhost:4444/health
+          curl --fail http://localhost:4445/health
+      - name: Revisar contenedores
+        if: always()
+        run: docker compose ps && docker compose logs --tail=40
+      - name: Detener contenedores
+        if: always()
+        run: docker compose down -v
