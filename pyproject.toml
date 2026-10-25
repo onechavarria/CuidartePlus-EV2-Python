@@ -5,7 +5,6 @@ addopts = "-q"
 [tool.coverage.run]
 relative_files = true
 branch = true
-source = ["usuarios/app", "pacientes/app"]
 
 [tool.coverage.report]
 show_missing = true
